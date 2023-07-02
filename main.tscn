@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://dgcfolttmf7aa"]
+[gd_scene load_steps=5 format=3 uid="uid://dgcfolttmf7aa"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_vyqjq"]
 [ext_resource type="PackedScene" uid="uid://k131drpanduh" path="res://note.tscn" id="2_7uaoa"]
 [ext_resource type="PackedScene" uid="uid://dlg517467or8d" path="res://detector.tscn" id="3_l4os0"]
+[ext_resource type="PackedScene" uid="uid://d2y2orfod5ew5" path="res://level_controller.tscn" id="4_we0jw"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1_vyqjq")
@@ -40,3 +41,7 @@ position = Vector2(1148, 100)
 note_type = 5
 
 [node name="Timer" type="Timer" parent="."]
+
+[node name="LevelController" parent="." instance=ExtResource("4_we0jw")]
+
+[connection signal="spawn_note" from="LevelController" to="." method="_on_level_controller_spawn_note"]

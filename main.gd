@@ -5,7 +5,7 @@ extends Node2D
 
 func _ready():
 	#spawn_sequentially()
-	pass
+	$LevelController.is_started = true
 
 func spawn_sequentially():
 	$Timer.start()
@@ -26,5 +26,11 @@ func spawn_note(position: Vector2, note_type: Note.NoteType):
 	add_child(note)
 
 func _process(delta):
-	#if Input.is_action_pressed("play_Q"):
-	$Label.text = $Detector0.success_to_str($Detector0.get_success())
+	$Label.text = str($LevelController.time)
+
+func _on_level_controller_spawn_note(type):
+	var spawn_position = Vector2(
+		get_node("Detector%s" % type).position.x,
+		screen.size.y
+	)
+	spawn_note(spawn_position, type)
