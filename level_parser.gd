@@ -1,4 +1,4 @@
-class_name LevelParser extends Object
+class_name LevelParser extends RefCounted
 
 var text: String
 var result: Dictionary = {

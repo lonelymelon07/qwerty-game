@@ -3,7 +3,7 @@ extends Node2D
 class_name Note
 
 @export var SPEED = 150
-@export_range(0, len(NoteType) - 1) var note_type: NoteType = 0
+@export var note_type: NoteType = 0
 
 enum NoteType {FAR_LEFT, LEFT, MID_LEFT, MID_RIGHT, RIGHT, FAR_RIGHT}
 

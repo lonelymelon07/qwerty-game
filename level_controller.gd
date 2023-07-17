@@ -14,8 +14,6 @@ var time: int = 0
 var notes: Dictionary
 var is_started: bool = false
 
-signal spawn_note(type)
-
 func _ready():
 	var parser = LevelParser.new("res://level.txt")
 	var level = parser.parse()
@@ -38,7 +36,7 @@ func _process(_delta):
 		if timestamps_to_play:
 			print(timestamps_to_play)
 		for i in timestamps_to_play:
-			emit_signal("spawn_note", notes[i])
+			spawn_note(notes[i])
 			notes.erase(i)
 
 func _advance_time():

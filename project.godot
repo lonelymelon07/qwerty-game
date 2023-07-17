@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="Rhythm Game"
-run/main_scene="res://main.tscn"
+run/main_scene="res://test_load_screen.tscn"
 config/features=PackedStringArray("4.0", "GL Compatibility")
 config/icon="res://assets/icon.svg"
+
+[autoload]
+
+SceneLoader="*res://scene_loader.gd"
 
 [display]
 

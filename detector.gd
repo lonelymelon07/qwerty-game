@@ -1,10 +1,10 @@
 extends Node
 
-@export_range(0, len(Note.NoteType) - 1) var note_type: Note.NoteType = 0
+@export var note_type: Note.NoteType = 0
 
 enum Success {MISS, OK, GOOD, PERFECT}
 
-func _process(delta):
+func _process(_delta):
 	var key = "play_%s"
 	match note_type:
 		5: key %= "Y"
@@ -48,3 +48,4 @@ func success_to_str(success: Success) -> String:
 
 func _on_textures_animation_changed():
 	$Textures.frame = note_type
+
