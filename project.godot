@@ -11,17 +11,19 @@ config_version=5
 [application]
 
 config/name="Rhythm Game"
-run/main_scene="res://test_load_screen.tscn"
+run/main_scene="res://src/test_load_screen.tscn"
 config/features=PackedStringArray("4.0", "GL Compatibility")
 config/icon="res://assets/icon.svg"
 
 [autoload]
 
-SceneLoader="*res://scene_loader.gd"
+SceneLoader="*res://src/util/scene_loader.gd"
 
 [display]
 
-window/stretch/scale=0.5
+window/size/viewport_width=960
+window/size/viewport_height=540
+window/stretch/mode="canvas_items"
 
 [input]
 

@@ -1,8 +1,7 @@
-extends Node
-
-@export var note_type: Note.NoteType = 0
+extends BaseNote
 
 enum Success {MISS, OK, GOOD, PERFECT}
+
 
 func _process(_delta):
 	var key = "play_%s"
@@ -17,11 +16,7 @@ func _process(_delta):
 		$Textures.animation = "highlighted"
 	else:
 		$Textures.animation = "default"
-	$Textures.frame = note_type
 
-func _ready():
-	$Textures.animation = "default"
-	$Textures.frame = note_type
 
 func get_success() -> Success:
 	if $Perfect.has_overlapping_areas():
@@ -32,6 +27,7 @@ func get_success() -> Success:
 		return Success.OK
 	
 	return Success.MISS
+
 
 func success_to_str(success: Success) -> String:
 	match success:
@@ -46,6 +42,4 @@ func success_to_str(success: Success) -> String:
 		_:
 			return "invalid"
 
-func _on_textures_animation_changed():
-	$Textures.frame = note_type
 

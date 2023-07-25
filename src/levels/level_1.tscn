@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://dgaypfjkvrm8b"]
+
+[ext_resource type="Texture2D" uid="uid://bx1bdlsdmxrg1" path="res://assets/level1_background.png" id="1_28tgy"]
+[ext_resource type="PackedScene" uid="uid://dutwwmrxovj7" path="res://src/note_controller.tscn" id="2_7rjhg"]
+[ext_resource type="Texture2D" uid="uid://c5qxkov5imng7" path="res://assets/mechanic_n.png" id="3_ew7yk"]
+
+[node name="Level1" type="Node2D"]
+
+[node name="Background" type="Sprite2D" parent="."]
+texture = ExtResource("1_28tgy")
+centered = false
+
+[node name="NoteController" parent="." instance=ExtResource("2_7rjhg")]
+sequence_path = "res://level.txt"
+
+[node name="MechanicN" type="Sprite2D" parent="."]
+position = Vector2(105, 260)
+texture = ExtResource("3_ew7yk")

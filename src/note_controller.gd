@@ -1,0 +1,73 @@
+extends Node2D
+
+@export var note_scene: PackedScene
+@export_file("*.txt") var sequence_path: String
+var metre: int
+var sub_metre: int
+var bpm: int
+var beat_time: int
+var subbeat_time: int
+var time: int = 0
+var notes: Dictionary
+var _time_last_frame: int = 0
+@onready var screen = get_viewport_rect()
+
+
+func _ready():
+	set_process(false)
+	
+	var parser = SequenceParser.new(sequence_path)
+	var sequence = parser.parse()
+	parser.push_errors()
+	
+	bpm = sequence.metadata.get("bpm", SequenceParser.DEFAULT_BPM)
+	metre = sequence.metadata.get("metre", SequenceParser.DEFAULT_METRE)
+	sub_metre = sequence.metadata.get("sub_metre", SequenceParser.DEFAULT_SUB_METRE)
+	beat_time = roundi(60_000_000.0 / bpm)
+	subbeat_time = roundi(beat_time / float(sub_metre))
+	
+	notes = vecd_to_timed(sequence.sequence)
+	
+	_time_last_frame = Time.get_ticks_usec()
+	
+	get_tree().set_group("debug", "visible", false)
+	
+
+func _process(_delta):
+	$Label.text = str(time)
+	
+	_advance_time()
+
+	var timestamps_to_play = notes.keys().filter(func(k): return k <= time)
+	for i in timestamps_to_play:
+		var spawn_position = Vector2(
+			get_node("Detector%s" % notes[i]).position.x,
+			screen.size.y
+		)
+		spawn_note(spawn_position, notes[i])
+		notes.erase(i)
+
+
+func start():
+	set_process(true)
+
+
+func spawn_note(spawn_position: Vector2, note_type: BaseNote.NoteType):
+	var note = note_scene.instantiate()
+	note.position = spawn_position
+	note.note_type = note_type
+	add_child(note)
+
+
+func vecd_to_timed(vecd: Dictionary):
+	var timed := {}
+	for k in vecd:
+		var newk: int = roundi(((metre*(k.x - 1) + (k.y - 1)) * beat_time) + k.z * subbeat_time)
+		timed[newk] = vecd[k]
+	return timed
+
+
+func _advance_time():
+	var time_this_frame = Time.get_ticks_usec()
+	time += time_this_frame - _time_last_frame
+	_time_last_frame = time_this_frame 
