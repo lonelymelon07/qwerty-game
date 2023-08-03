@@ -21,4 +21,24 @@ func _ready():
 
 
 func _on_textures_animation_changed():
-	$Textures.set_deferred("frame", note_type)
+	$Textures.set_deferred(&"frame", note_type)
+
+static func note_type_to_string(_note_type: NoteType) -> Nullable:
+	match _note_type:
+		NoteType.FAR_LEFT: return Nullable.some("Q")
+		NoteType.LEFT: return Nullable.some("W")
+		NoteType.MID_LEFT: return Nullable.some("E")
+		NoteType.MID_RIGHT: return Nullable.some("R")
+		NoteType.RIGHT: return Nullable.some("T")
+		NoteType.FAR_RIGHT: return Nullable.some("Y")
+		_: return Nullable.none(TYPE_STRING)
+
+static func string_to_note_type(string: String) -> NoteType:
+	match string.capitalize():
+		"Q": return NoteType.FAR_LEFT
+		"W": return NoteType.LEFT
+		"E": return NoteType.MID_LEFT
+		"R": return NoteType.MID_RIGHT
+		"T": return NoteType.RIGHT
+		"Y": return NoteType.FAR_RIGHT
+		_: return NoteType.INVALID

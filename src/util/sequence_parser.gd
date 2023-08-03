@@ -31,13 +31,18 @@ func parse() -> Dictionary:
 			pass
 		elif line.begins_with("$"):
 			var item = _parse_item(line.lstrip("$"))
-			if item != null:
+			if item.is_some:
+				item = item.unwrap()
 				result.metadata[item[0]] = int(item[1]) if item[1].is_valid_int() else item[1]
 		else:
 			var item = _parse_item(line)
-			if item != null:
-				result.sequence[_parse_timestamp(item[0])] = _char_to_notetype(item[1])
-		
+			if item.is_some:
+				item = item.unwrap()
+				var timestamp = _parse_timestamp(item[0]).unwrap(true)
+				if not result.sequence.has(timestamp):
+					result.sequence[timestamp] = []
+				result.sequence[timestamp].append(_char_to_notetype(item[1]))
+
 		_current += 1
 
 	return result
@@ -59,34 +64,29 @@ func push_errors():
 		push_error("error parsing %s at line %d: %s\n" % [path, e[0] + 1, e[1]])
 
 
-func _parse_item(line: String): # -> Array | null
+func _parse_item(line: String) -> Nullable: # -> Array | null
 	line = line.strip_edges()
 	var split_line = Array(line.split("="))
 	
 	if len(split_line) != 2:
 		errors.append([_current, "invalid key/value pair"])
-		return null
-	return split_line.map(func(x): return x.strip_edges())
+		return Nullable.none(TYPE_ARRAY)
+	return Nullable.some(split_line.map(func(x): return x.strip_edges()))
 		
 
-func _parse_timestamp(s): # -> Array | null
+func _parse_timestamp(s) -> Nullable: # -> Vector3i | null
 	var nums = s.split(".")
 	
 	if len(nums) != 3:
 		errors.append([_current, "beat position must contain 3 values, eg 1.2.0"])
-		return null
+		return Nullable.none(TYPE_VECTOR3I)
 	nums = Array(nums).map(func(s): return s.to_int())
-	return Vector3i(nums[0], nums[1], nums[2])
+	return Nullable.some(Vector3i(nums[0], nums[1], nums[2]))
 
 
-func _char_to_notetype(c) -> BaseNote.NoteType:
-	match c:
-		"Q": return BaseNote.NoteType.FAR_LEFT
-		"W": return BaseNote.NoteType.LEFT
-		"E": return BaseNote.NoteType.MID_LEFT
-		"R": return BaseNote.NoteType.MID_RIGHT
-		"T": return BaseNote.NoteType.RIGHT
-		"Y": return BaseNote.NoteType.FAR_RIGHT
-		_:
-			errors.append([_current, "invalid NoteType"])
-			return BaseNote.NoteType.INVALID
+func _char_to_notetype(c: String) -> BaseNote.NoteType:
+	var nt = BaseNote.string_to_note_type(c)
+	if nt == BaseNote.NoteType.INVALID:
+		errors.append([_current, "invalid note type"])
+		
+	return nt

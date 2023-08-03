@@ -2,9 +2,17 @@ extends BaseNote
 
 enum Success {MISS, OK, GOOD, PERFECT}
 
+signal played(success: Success)
+
+var key: StringName
+
+
+func _ready():
+	# child functions override parent ones!
+	super._ready()
 
 func _process(_delta):
-	var key = "play_%s"
+	key = &"play_%s"
 	match note_type:
 		5: key %= "Y"
 		4: key %= "T"
@@ -12,24 +20,38 @@ func _process(_delta):
 		2: key %= "E"
 		1: key %= "W"
 		_: key %= "Q"
+	
 	if Input.is_action_pressed(key):
-		$Textures.animation = "highlighted"
+		$Textures.animation = &"highlighted"
+		_find_overlapping_areas().map(func(s): played.emit(s))
 	else:
-		$Textures.animation = "default"
+		$Textures.animation = &"default"
 
 
-func get_success() -> Success:
-	if $Perfect.has_overlapping_areas():
+
+func _get_success(area: Area2D) -> Success:
+	if $Perfect.overlaps_area(area):
 		return Success.PERFECT
-	if $Good.has_overlapping_areas():
+	if $Good.overlaps_area(area):
 		return Success.GOOD
-	if $OK.has_overlapping_areas():
+	if $OK.overlaps_area(area):
 		return Success.OK
 	
 	return Success.MISS
 
 
-func success_to_str(success: Success) -> String:
+func _find_overlapping_areas() -> Array[Success]:
+	var areas: Array[Area2D] = $OK.get_overlapping_areas()
+	var result: Array[Success] = []
+	for area in areas:
+		if area.monitorable:
+			area.monitorable = false
+			result.append(_get_success(area))
+	if len(result) == 0:
+		result.append(Success.MISS)
+	return result
+
+static func success_to_str(success: Success) -> String:
 	match success:
 		Success.MISS:
 			return "miss"

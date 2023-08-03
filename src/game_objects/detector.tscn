@@ -72,7 +72,7 @@ size = Vector2(74, 66.75)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_iuute"]
 size = Vector2(74, 8)
 
-[node name="Detector" type="Node2D"]
+[node name="Detector" type="Node2D" groups=["detector"]]
 script = ExtResource("1_f24u8")
 
 [node name="Textures" type="AnimatedSprite2D" parent="."]
