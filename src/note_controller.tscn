@@ -1,33 +1,82 @@
-[gd_scene load_steps=5 format=3 uid="uid://dutwwmrxovj7"]
+[gd_scene load_steps=9 format=3 uid="uid://dutwwmrxovj7"]
 
 [ext_resource type="Script" path="res://src/note_controller.gd" id="1_un8li"]
 [ext_resource type="PackedScene" uid="uid://cx5wmtrdli8ue" path="res://src/game_objects/note.tscn" id="2_5wrd5"]
-[ext_resource type="AudioStream" uid="uid://eekvj3ypmj06" path="res://assets/music/dancing_in_the_moonlight.ogg" id="3_6hn4w"]
 [ext_resource type="PackedScene" uid="uid://dlg517467or8d" path="res://src/game_objects/detector.tscn" id="3_rridl"]
+[ext_resource type="Texture2D" uid="uid://dqt37n610gp53" path="res://assets/ui/miss.png" id="4_xvu4f"]
+[ext_resource type="Texture2D" uid="uid://bk074sxg6npvc" path="res://assets/ui/ok.png" id="5_xw6xk"]
+[ext_resource type="Texture2D" uid="uid://ce1ercii4pt21" path="res://assets/ui/good.png" id="6_t1lk0"]
+[ext_resource type="Texture2D" uid="uid://cwo6ike2k5nfj" path="res://assets/ui/perfect.png" id="7_7sny0"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ncehg"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_xvu4f")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_xw6xk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_t1lk0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_7sny0")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_t1lk0")
+}, {
+"duration": 1.0,
+"texture": null
+}],
+"loop": false,
+"name": &"good",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_xvu4f")
+}, {
+"duration": 1.0,
+"texture": null
+}],
+"loop": false,
+"name": &"miss",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_xw6xk")
+}, {
+"duration": 1.0,
+"texture": null
+}],
+"loop": false,
+"name": &"ok",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("7_7sny0")
+}, {
+"duration": 1.0,
+"texture": null
+}],
+"loop": false,
+"name": &"perfect",
+"speed": 5.0
+}]
 
 [node name="NoteController" type="Node2D"]
 script = ExtResource("1_un8li")
 note_scene = ExtResource("2_5wrd5")
-song_audio = ExtResource("3_6hn4w")
 sequence_path = "res://levelcfg.cfg"
 metadata/_edit_vertical_guides_ = [480.0]
-
-[node name="Label0" type="Label" parent="." groups=["debug"]]
-offset_right = 40.0
-offset_bottom = 23.0
-theme_override_font_sizes/font_size = 72
-
-[node name="Label1" type="Label" parent="."]
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = 740.0
-offset_top = 10.0
-offset_right = 920.0
-offset_bottom = 55.0
-grow_horizontal = 0
-size_flags_horizontal = 8
-theme_override_font_sizes/font_size = 20
 
 [node name="Detector0" parent="." instance=ExtResource("3_rridl")]
 position = Vector2(280, 75)
@@ -56,5 +105,10 @@ note_type = 5
 
 [node name="StartDelay" type="Timer" parent="."]
 one_shot = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(125, 75)
+sprite_frames = SubResource("SpriteFrames_ncehg")
+animation = &"perfect"
 
 [connection signal="timeout" from="StartDelay" to="." method="_on_start_delay_timeout"]

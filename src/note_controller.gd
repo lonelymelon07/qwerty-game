@@ -20,9 +20,6 @@ func _ready():
 	
 	$MusicPlayer.stream = song_audio
 	
-	$Label0.text = "---"
-	$Label1.text = "---"
-	
 	var parser = SequenceParser.new(sequence_path)
 	var sequence = parser.parse()
 	parser.push_errors()
@@ -35,6 +32,7 @@ func _ready():
 	
 	notes = vecd_to_timed(sequence.sequence)
 	
+	# Connected detector signals
 	for node in get_children():
 		if node.is_in_group(&"detector"):
 			node.played.connect(_on_detector_played_note)
@@ -62,6 +60,7 @@ func start():
 	_time_last_frame = Time.get_ticks_usec()
 	set_process(true)
 	$StartDelay.start()
+	
 
 
 func spawn_note(spawn_position: Vector2, note_type: BaseNote.NoteType, speed: float):
@@ -88,11 +87,7 @@ func _advance_time():
 
 
 func _on_detector_played_note(success):
-	$Label0.text = $Detector0.success_to_str(success)
-	$Label1.text = $Detector5.success_to_str(success)
-	await get_tree().create_timer(0.5).timeout
-	$Label0.text = "---"
-	$Label1.text = "---"
+	$AnimatedSprite2D.play($Detector0.success_to_str(success))
 
 
 func _on_start_delay_timeout():

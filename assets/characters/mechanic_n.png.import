@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bx1bdlsdmxrg1"
-path="res://.godot/imported/level1_background.png-0cb4f870d4fd6b99f293330c724f4ce9.ctex"
+uid="uid://c5qxkov5imng7"
+path="res://.godot/imported/mechanic_n.png-8964b1ce150d9c700652018db1a2cee7.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/level1_background.png"
-dest_files=["res://.godot/imported/level1_background.png-0cb4f870d4fd6b99f293330c724f4ce9.ctex"]
+source_file="res://assets/characters/mechanic_n.png"
+dest_files=["res://.godot/imported/mechanic_n.png-8964b1ce150d9c700652018db1a2cee7.ctex"]
 
 [params]
 
