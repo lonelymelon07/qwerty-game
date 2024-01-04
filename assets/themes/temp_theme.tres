@@ -1,0 +1,7 @@
+[gd_resource type="Theme" load_steps=2 format=3]
+
+[ext_resource type="FontFile" uid="uid://b0w0lmgfdwjtc" path="res://assets/themes/casio-fx-cg50-sizea.ttf" id="1_8ms3v"]
+
+[resource]
+default_font = ExtResource("1_8ms3v")
+default_font_size = 16

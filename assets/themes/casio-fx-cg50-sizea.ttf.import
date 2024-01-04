@@ -3,12 +3,12 @@
 importer="font_data_dynamic"
 type="FontFile"
 uid="uid://b0w0lmgfdwjtc"
-path="res://.godot/imported/casio-fx-cg50-sizea.ttf-c31e146e10fceff651ae7526020b6f6f.fontdata"
+path="res://.godot/imported/casio-fx-cg50-sizea.ttf-2280a0de4ac7cf99c20efad84c16ef2b.fontdata"
 
 [deps]
 
-source_file="res://assets/casio-fx-cg50-sizea.ttf"
-dest_files=["res://.godot/imported/casio-fx-cg50-sizea.ttf-c31e146e10fceff651ae7526020b6f6f.fontdata"]
+source_file="res://assets/themes/casio-fx-cg50-sizea.ttf"
+dest_files=["res://.godot/imported/casio-fx-cg50-sizea.ttf-2280a0de4ac7cf99c20efad84c16ef2b.fontdata"]
 
 [params]
 
