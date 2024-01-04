@@ -83,12 +83,14 @@ func vecd_to_timed(vecd: Dictionary):
 func _advance_time():
 	var time_this_frame = Time.get_ticks_usec()
 	time += time_this_frame - _time_last_frame
-	_time_last_frame = time_this_frame 
-
+	_time_last_frame = time_this_frame
 
 func _on_detector_played_note(success):
 	$AnimatedSprite2D.play($Detector0.success_to_str(success))
 
-
 func _on_start_delay_timeout():
 	$MusicPlayer.play()
+
+func _on_music_player_finished():
+	set_process(false)
+	print("finished")

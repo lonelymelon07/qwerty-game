@@ -111,4 +111,5 @@ position = Vector2(125, 75)
 sprite_frames = SubResource("SpriteFrames_ncehg")
 animation = &"perfect"
 
+[connection signal="finished" from="MusicPlayer" to="." method="_on_music_player_finished"]
 [connection signal="timeout" from="StartDelay" to="." method="_on_start_delay_timeout"]
