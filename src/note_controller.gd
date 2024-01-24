@@ -14,6 +14,8 @@ var note_speed: float
 var _time_last_frame: int = 0
 @onready var screen = get_viewport_rect()
 
+var _t_score: int = 0
+
 
 func _ready():
 	set_process(false)
@@ -87,6 +89,9 @@ func _advance_time():
 
 func _on_detector_played_note(success):
 	$AnimatedSprite2D.play($Detector0.success_to_str(success))
+	
+	_t_score += success if success else -1
+	print(_t_score)
 
 func _on_start_delay_timeout():
 	$MusicPlayer.play()

@@ -2,7 +2,7 @@ extends Control
 
 
 func _ready():
-	SceneLoader.load_scene("res://src/levels/level_1.tscn")
+	SceneLoader.load_scene("res://src/levels/default_level.tscn")
 
 
 func _process(_delta):

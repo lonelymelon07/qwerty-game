@@ -7,11 +7,18 @@ func _on_quit_button_pressed():
 
 
 func _on_play_button_pressed():
-	SceneLoader.load_scene("res://src/levels/level_1.tscn")
+	SceneLoader.load_scene("res://src/levels/default_level.tscn")
+	var scene = await SceneLoader.loaded
+	change_to_level_scene(scene, "res://level.txt")
 
 
 func _on_play_custom_button_pressed():
-	if ResourceLoader.exists("res://src/levels/%s.tscn" % $CustomLevelEdit.text):
-		SceneLoader.load_scene("res://src/levels/%s.tscn" % $CustomLevelEdit.text)
-	else:
-		print("Error loading level: level does not exist!")
+	SceneLoader.load_scene("res://src/levels/default_level.tscn")
+	var scene = await SceneLoader.loaded
+	change_to_level_scene(scene, $CustomLevelContainer/CustomLevelEdit.text)
+
+
+func change_to_level_scene(level_scene: PackedScene, sequence_path: String):
+	var level := level_scene.instantiate()
+	level.get_node(^"NoteController").sequence_path = sequence_path
+	get_tree().root.add_child(level)

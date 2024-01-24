@@ -8,9 +8,6 @@
 [ext_resource type="Texture2D" uid="uid://cbnpapd6h57e4" path="res://assets/notes/hnote5.png" id="6_pybah"]
 [ext_resource type="Texture2D" uid="uid://ctfdmibvkdmbl" path="res://assets/notes/hnote6.png" id="7_j573o"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_1kgj1"]
-size = Vector2(74, 3)
-
 [sub_resource type="SpriteFrames" id="SpriteFrames_4b1sx"]
 animations = [{
 "frames": [{
@@ -37,14 +34,11 @@ animations = [{
 "speed": 0.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1kgj1"]
+size = Vector2(74, 10)
+
 [node name="Note" type="Node2D"]
 script = ExtResource("1_vylkh")
-
-[node name="Collision" type="Area2D" parent="."]
-collision_mask = 0
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision"]
-shape = SubResource("RectangleShape2D_1kgj1")
 
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
 position = Vector2(0.499999, 0.5)
@@ -54,5 +48,11 @@ scale = Vector2(3.75, 3.75)
 sprite_frames = SubResource("SpriteFrames_4b1sx")
 animation = &"textures"
 speed_scale = 0.0
+
+[node name="Collision" type="Area2D" parent="."]
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Collision"]
+shape = SubResource("RectangleShape2D_1kgj1")
 
 [connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_screen_exited"]
