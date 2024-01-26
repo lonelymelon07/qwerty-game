@@ -2,7 +2,7 @@
 
 extends Node
 
-signal loaded
+signal loaded(scene: PackedScene)
 
 var load_status: int = ResourceLoader.THREAD_LOAD_INVALID_RESOURCE
 var target_path: String
@@ -19,9 +19,9 @@ func _process(_delta):
 		ResourceLoader.THREAD_LOAD_IN_PROGRESS:
 			pass
 		ResourceLoader.THREAD_LOAD_LOADED:
-#			get_tree().change_scene_to_packed(ResourceLoader.load_threaded_get(target_path))
-#			target_path = ""
 			loaded.emit(ResourceLoader.load_threaded_get(target_path))
+			target_path = ""
+			load_status = ResourceLoader.THREAD_LOAD_INVALID_RESOURCE
 			set_process(false)
 		ResourceLoader.THREAD_LOAD_FAILED:
 			push_error("Error loading scene %s" % target_path)

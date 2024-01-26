@@ -41,7 +41,7 @@ func unwrap_or_else(f: Callable) -> Variant:
 	return _value if is_some else f.call()
 
 func expect(message: String, warning := false) -> Variant:
-	if is_some:
+	if is_none:
 		if warning:
 			push_warning(message)
 		else:

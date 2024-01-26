@@ -34,7 +34,7 @@ func _ready():
 	
 	notes = vecd_to_timed(sequence.sequence)
 	
-	# Connected detector signals
+	# Connect detector signals
 	for node in get_children():
 		if node.is_in_group(&"detector"):
 			node.played.connect(_on_detector_played_note)
@@ -48,7 +48,9 @@ func _ready():
 func _process(_delta):
 	_advance_time()
 
+	# Get all notes which need to be played
 	var timestamps_to_play = notes.keys().filter(func(k): return k <= time)
+	# Spawn each in the right spot!
 	for timestamp in timestamps_to_play:
 		for note in notes[timestamp]:
 			var spawn_position := Vector2(get_node("Detector%s" % note).position.x, screen.size.y)
@@ -72,7 +74,7 @@ func spawn_note(spawn_position: Vector2, note_type: BaseNote.NoteType, speed: fl
 	note.speed = speed
 	add_child(note)
 
-
+# Converts a Dict with Vector3 keys (bar, beat. subbeat) to a single timestamp key in us
 func vecd_to_timed(vecd: Dictionary):
 	var timed := {}
 	for k in vecd:
@@ -90,7 +92,7 @@ func _advance_time():
 func _on_detector_played_note(success):
 	$AnimatedSprite2D.play($Detector0.success_to_str(success))
 	
-	_t_score += success if success else -1
+	_t_score += success if success else -1 # 0 == Miss, 1<= is a hit
 	print(_t_score)
 
 func _on_start_delay_timeout():
@@ -99,3 +101,4 @@ func _on_start_delay_timeout():
 func _on_music_player_finished():
 	set_process(false)
 	print("finished")
+	get_tree().change_scene_to_file("res://src/main_menu.tscn")
