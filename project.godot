@@ -18,6 +18,7 @@ config/icon="res://assets/icon.svg"
 [autoload]
 
 SceneLoader="*res://src/util/scene_loader.gd"
+Persistant="*res://src/util/persistant.gd"
 
 [display]
 

@@ -106,7 +106,7 @@ note_type = 5
 [node name="StartDelay" type="Timer" parent="."]
 one_shot = true
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="SuccessIndicator" type="AnimatedSprite2D" parent="."]
 position = Vector2(125, 75)
 sprite_frames = SubResource("SpriteFrames_ncehg")
 animation = &"perfect"

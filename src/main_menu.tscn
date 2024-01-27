@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bjvy0v3gu14r"]
+[gd_scene load_steps=4 format=3 uid="uid://bjvy0v3gu14r"]
 
 [ext_resource type="Script" path="res://src/main_menu.gd" id="1_epqrp"]
-[ext_resource type="Theme" path="res://assets/themes/temp_theme.tres" id="1_w301r"]
+[ext_resource type="Theme" uid="uid://df0q8hdt0bl7v" path="res://assets/themes/temp_theme.tres" id="1_w301r"]
+[ext_resource type="FontFile" uid="uid://b0w0lmgfdwjtc" path="res://assets/themes/casio-fx-cg50-sizea.ttf" id="3_s35g6"]
 
 [node name="UI" type="Control"]
 layout_mode = 3
@@ -59,10 +60,13 @@ grow_vertical = 2
 
 [node name="CustomLevelEdit" type="LineEdit" parent="CustomLevelContainer"]
 layout_mode = 2
+tooltip_text = "Enter the path of the level file, relative to the project root directory"
+theme_override_fonts/font = ExtResource("3_s35g6")
 placeholder_text = "Custom sequence"
 
 [node name="CustomSongEdit" type="LineEdit" parent="CustomLevelContainer"]
 layout_mode = 2
+theme_override_fonts/font = ExtResource("3_s35g6")
 placeholder_text = "Custom song"
 
 [node name="PlayCustomButton" type="Button" parent="CustomLevelContainer"]
@@ -70,12 +74,6 @@ layout_mode = 2
 text = "Play Custom
 "
 
-[node name="PlayCustomButton" type="Button" parent="."]
-layout_mode = 0
-text = "Play Custom
-"
-
 [connection signal="pressed" from="QuitButton" to="." method="_on_quit_button_pressed"]
 [connection signal="pressed" from="PlayButton" to="." method="_on_play_button_pressed"]
 [connection signal="pressed" from="CustomLevelContainer/PlayCustomButton" to="." method="_on_play_custom_button_pressed"]
-[connection signal="pressed" from="PlayCustomButton" to="." method="_on_play_custom_button_pressed"]

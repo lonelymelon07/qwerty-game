@@ -42,6 +42,8 @@ func _ready():
 	$StartDelay.wait_time = (beat_time * metre) / 1_000_000
 	note_speed = (screen.size.y - $Detector0.position.y) / (beat_time * metre / 1_000_000)
 	
+	$SuccessIndicator.play()
+	
 	start()
 	
 
@@ -56,7 +58,10 @@ func _process(_delta):
 			var spawn_position := Vector2(get_node("Detector%s" % note).position.x, screen.size.y)
 			spawn_note(spawn_position, note, note_speed)
 		notes.erase(timestamp)
-
+	
+	if Input.is_action_just_pressed("ui_cancel"):
+		_on_music_player_finished()
+	
 
 func start():
 	print(song_audio.bpm)
@@ -90,7 +95,7 @@ func _advance_time():
 	_time_last_frame = time_this_frame
 
 func _on_detector_played_note(success):
-	$AnimatedSprite2D.play($Detector0.success_to_str(success))
+	$SuccessIndicator.play($Detector0.success_to_str(success))
 	
 	_t_score += success if success else -1 # 0 == Miss, 1<= is a hit
 	print(_t_score)
@@ -99,6 +104,7 @@ func _on_start_delay_timeout():
 	$MusicPlayer.play()
 
 func _on_music_player_finished():
-	set_process(false)
 	print("finished")
 	get_tree().change_scene_to_file("res://src/main_menu.tscn")
+	set_process(false)
+	get_node("/root/Level1").queue_free()
