@@ -12,6 +12,7 @@ var time: int = 0
 var notes: Dictionary
 var note_speed: float
 var _time_last_frame: int = 0
+var seeked_start: int = 60_000_000
 @onready var screen = get_viewport_rect()
 
 var _t_score: int = 0
@@ -48,7 +49,8 @@ func _ready():
 	
 
 func _process(_delta):
-	_advance_time()
+	if $StartDelay.is_stopped():
+		_advance_time()
 
 	# Get all notes which need to be played
 	var timestamps_to_play = notes.keys().filter(func(k): return k <= time)
@@ -67,6 +69,14 @@ func start():
 	print(song_audio.bpm)
 	print(song_audio.bar_beats)
 	_time_last_frame = Time.get_ticks_usec()
+	
+	# We're skipping ahead, so let's purge any notes we don't need
+	var timestamps_to_erase = notes.keys().filter(func(k): return k < seeked_start)
+	for k in timestamps_to_erase:
+		notes.erase(k)
+
+	time = seeked_start
+
 	set_process(true)
 	$StartDelay.start()
 	
@@ -79,7 +89,7 @@ func spawn_note(spawn_position: Vector2, note_type: BaseNote.NoteType, speed: fl
 	note.speed = speed
 	add_child(note)
 
-# Converts a Dict with Vector3 keys (bar, beat. subbeat) to a single timestamp key in us
+# Converts a Dict with Vector3 keys (bar, beat, subbeat) to a single timestamp key in μs
 func vecd_to_timed(vecd: Dictionary):
 	var timed := {}
 	for k in vecd:
@@ -101,7 +111,7 @@ func _on_detector_played_note(success):
 	print(_t_score)
 
 func _on_start_delay_timeout():
-	$MusicPlayer.play()
+	$MusicPlayer.play(seeked_start / 1_000_000)
 
 func _on_music_player_finished():
 	print("finished")

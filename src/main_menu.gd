@@ -3,8 +3,15 @@ extends Control
 @onready var tree = get_tree()
 
 func _ready():
-	$CustomLevelContainer/CustomLevelEdit.text = Persistant.main_menu_data.custom_level_edit_text
-	$CustomLevelContainer/CustomSongEdit.text = Persistant.main_menu_data.custom_song_edit_text
+	$CustomLevelContainer/CustomLevelEdit.text = Persistent.main_menu_data.custom_level_edit_text
+	$CustomLevelContainer/CustomSongEdit.text = Persistent.main_menu_data.custom_song_edit_text
+	
+	if Persistent.config.debug.instant_load_default_level:
+		_on_play_button_pressed()
+	elif Persistent.config.debug.instant_load_custom_level:
+		$CustomLevelContainer/CustomLevelEdit.text = Persistent.config.custom_sequence_path
+		$CustomLevelContainer/CustomSongEdit.text = Persistent.config.custom_audio_path
+		_on_play_custom_button_pressed()
 
 func _on_quit_button_pressed():
 	tree.quit()
@@ -30,8 +37,10 @@ func change_to_level_scene(level_scene: PackedScene, sequence_path: String, audi
 	level.get_node(^"NoteController").sequence_path = sequence_path
 	if audio_stream.is_some:
 		level.get_node(^"NoteController").song_audio = audio_stream.unwrap(true)
-		
-	Persistant.main_menu_data.custom_level_edit_text = $CustomLevelContainer/CustomLevelEdit.text
-	Persistant.main_menu_data.custom_song_edit_text = $CustomLevelContainer/CustomSongEdit.text
+	
+	level.get_node(^"NoteController").seeked_start = roundi(Persistent.config.debug.start_song_from_s * 1_000_000)
+	
+	Persistent.main_menu_data.custom_level_edit_text = $CustomLevelContainer/CustomLevelEdit.text
+	Persistent.main_menu_data.custom_song_edit_text = $CustomLevelContainer/CustomSongEdit.text
 	
 	tree.root.add_child(level)

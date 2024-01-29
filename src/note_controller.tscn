@@ -75,7 +75,6 @@ animations = [{
 [node name="NoteController" type="Node2D"]
 script = ExtResource("1_un8li")
 note_scene = ExtResource("2_5wrd5")
-sequence_path = "res://levelcfg.cfg"
 metadata/_edit_vertical_guides_ = [480.0]
 
 [node name="Detector0" parent="." instance=ExtResource("3_rridl")]
