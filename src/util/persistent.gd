@@ -21,3 +21,5 @@ func _ready():
 		config[section] = {}
 		for key in config_file.get_section_keys(section):
 			config[section][key] = config_file.get_value(section, key, null)
+			
+	print(config)

@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://c5qxkov5imng7" path="res://assets/characters/mechanic_n.png" id="4_ynjgn"]
 [ext_resource type="Texture2D" uid="uid://co2n4otpggkkp" path="res://assets/characters/sing1_1.png" id="5_uxxy1"]
 
-[node name="Level1" type="Node2D"]
+[node name="Level" type="Node2D"]
 
 [node name="Background" type="Sprite2D" parent="."]
 texture = ExtResource("1_ievwq")

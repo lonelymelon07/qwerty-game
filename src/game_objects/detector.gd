@@ -1,6 +1,6 @@
 extends BaseNote
 
-enum Success {MISS, OK, GOOD, PERFECT}
+enum Success { MISS, OK, GOOD, PERFECT }
 
 signal played(success: Success)
 
@@ -18,14 +18,16 @@ func _ready():
 		2: key %= "E"
 		1: key %= "W"
 		_: key %= "Q"
-		
+
 
 func _process(_delta):
-	if Input.is_action_just_pressed(key):
+	if Input.is_action_pressed(key):
 		$Textures.animation = &"highlighted"
-		_find_overlapping_areas().map(func(s): played.emit(s))
 	else:
 		$Textures.animation = &"default"
+	
+	if Input.is_action_just_pressed(key):
+		_find_overlapping_areas().map(func(s): played.emit(s))
 
 
 

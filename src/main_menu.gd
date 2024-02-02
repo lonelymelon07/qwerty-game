@@ -13,23 +13,23 @@ func _ready():
 		$CustomLevelContainer/CustomSongEdit.text = Persistent.config.custom_audio_path
 		_on_play_custom_button_pressed()
 
+
 func _on_quit_button_pressed():
 	tree.quit()
 
 
 func _on_play_button_pressed():
-	SceneLoader.load_scene("res://src/levels/default_level.tscn")
+	SceneLoader.load_scene("res://src/levels/base_test_level.tscn")
 	var scene = await SceneLoader.loaded
 	change_to_level_scene(scene, "res://level.txt", Nullable.none(TYPE_OBJECT))
 
 
 func _on_play_custom_button_pressed():
-	SceneLoader.load_scene("res://src/levels/default_level.tscn")
+	SceneLoader.load_scene("res://src/levels/base_test_level.tscn")
 	var scene: PackedScene = await SceneLoader.loaded
 	var audio: AudioStreamOggVorbis = load($CustomLevelContainer/CustomSongEdit.text)
 	
 	change_to_level_scene(scene, $CustomLevelContainer/CustomLevelEdit.text, Nullable.some(audio))
-	print("pcbtnp")
 
 
 func change_to_level_scene(level_scene: PackedScene, sequence_path: String, audio_stream: Nullable):

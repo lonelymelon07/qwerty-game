@@ -14,6 +14,7 @@ var errors: Array[Array] = []
 var _current := 0
 var path: String
 
+
 func _init(file_path: String):
 	path = file_path
 	var file = FileAccess.open(path, FileAccess.READ)
@@ -72,7 +73,7 @@ func _parse_item(line: String) -> Nullable: # -> Array | null
 		errors.append([_current, "invalid key/value pair"])
 		return Nullable.none(TYPE_ARRAY)
 	return Nullable.some(split_line.map(func(x): return x.strip_edges()))
-		
+
 
 func _parse_timestamp(s) -> Nullable: # -> Vector3i | null
 	var nums = s.split(".")

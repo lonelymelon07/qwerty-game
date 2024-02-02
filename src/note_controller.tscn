@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dutwwmrxovj7"]
+[gd_scene load_steps=10 format=3 uid="uid://dutwwmrxovj7"]
 
 [ext_resource type="Script" path="res://src/note_controller.gd" id="1_un8li"]
 [ext_resource type="PackedScene" uid="uid://cx5wmtrdli8ue" path="res://src/game_objects/note.tscn" id="2_5wrd5"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://bk074sxg6npvc" path="res://assets/ui/ok.png" id="5_xw6xk"]
 [ext_resource type="Texture2D" uid="uid://ce1ercii4pt21" path="res://assets/ui/good.png" id="6_t1lk0"]
 [ext_resource type="Texture2D" uid="uid://cwo6ike2k5nfj" path="res://assets/ui/perfect.png" id="7_7sny0"]
+[ext_resource type="Theme" uid="uid://df0q8hdt0bl7v" path="res://assets/themes/temp_theme.tres" id="8_10l05"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_ncehg"]
 animations = [{
@@ -109,6 +110,15 @@ one_shot = true
 position = Vector2(125, 75)
 sprite_frames = SubResource("SpriteFrames_ncehg")
 animation = &"perfect"
+
+[node name="ScoreLabel" type="Label" parent="."]
+offset_left = 770.0
+offset_top = 45.0
+offset_right = 910.0
+offset_bottom = 110.0
+theme = ExtResource("8_10l05")
+theme_override_font_sizes/font_size = 48
+text = "000"
 
 [connection signal="finished" from="MusicPlayer" to="." method="_on_music_player_finished"]
 [connection signal="timeout" from="StartDelay" to="." method="_on_start_delay_timeout"]

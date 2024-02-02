@@ -1,5 +1,7 @@
 extends Node2D
 
+const NOTE_SPEED_MODIFIER = 1
+
 @export var note_scene: PackedScene
 @export var song_audio: AudioStreamOggVorbis
 @export_file("*.txt") var sequence_path: String
@@ -12,7 +14,7 @@ var time: int = 0
 var notes: Dictionary
 var note_speed: float
 var _time_last_frame: int = 0
-var seeked_start: int = 60_000_000
+var seeked_start: int = 0
 @onready var screen = get_viewport_rect()
 
 var _t_score: int = 0
@@ -22,6 +24,8 @@ func _ready():
 	set_process(false)
 	
 	$MusicPlayer.stream = song_audio
+	if Persistent.config.debug.mute_audio:
+		$MusicPlayer.volume_db = -300.0
 	
 	var parser = SequenceParser.new(sequence_path)
 	var sequence = parser.parse()
@@ -40,13 +44,15 @@ func _ready():
 		if node.is_in_group(&"detector"):
 			node.played.connect(_on_detector_played_note)
 			
-	$StartDelay.wait_time = (beat_time * metre) / 1_000_000
-	note_speed = (screen.size.y - $Detector0.position.y) / (beat_time * metre / 1_000_000)
+	$StartDelay.wait_time = ((beat_time * 0.5  * metre) / 1_000_000) / NOTE_SPEED_MODIFIER
+	
+	# get speed of notes : modifier * (distance / time [assuming notes should spawn 1 bar ahead] )
+	note_speed = NOTE_SPEED_MODIFIER * ((screen.size.y - $Detector0.position.y) / (beat_time * 0.5 * metre / 1_000_000))
 	
 	$SuccessIndicator.play()
 	
 	start()
-	
+
 
 func _process(_delta):
 	if $StartDelay.is_stopped():
@@ -64,6 +70,8 @@ func _process(_delta):
 	if Input.is_action_just_pressed("ui_cancel"):
 		_on_music_player_finished()
 	
+	$ScoreLabel.text = str(_t_score)
+
 
 func start():
 	print(song_audio.bpm)
@@ -79,7 +87,6 @@ func start():
 
 	set_process(true)
 	$StartDelay.start()
-	
 
 
 func spawn_note(spawn_position: Vector2, note_type: BaseNote.NoteType, speed: float):
@@ -87,7 +94,9 @@ func spawn_note(spawn_position: Vector2, note_type: BaseNote.NoteType, speed: fl
 	note.position = spawn_position
 	note.note_type = note_type
 	note.speed = speed
+	note.missed.connect(_on_note_miss)
 	add_child(note)
+
 
 # Converts a Dict with Vector3 keys (bar, beat, subbeat) to a single timestamp key in μs
 func vecd_to_timed(vecd: Dictionary):
@@ -98,11 +107,11 @@ func vecd_to_timed(vecd: Dictionary):
 	return timed
 
 
-
 func _advance_time():
 	var time_this_frame = Time.get_ticks_usec()
 	time += time_this_frame - _time_last_frame
 	_time_last_frame = time_this_frame
+
 
 func _on_detector_played_note(success):
 	$SuccessIndicator.play($Detector0.success_to_str(success))
@@ -110,11 +119,16 @@ func _on_detector_played_note(success):
 	_t_score += success if success else -1 # 0 == Miss, 1<= is a hit
 	print(_t_score)
 
+
 func _on_start_delay_timeout():
 	$MusicPlayer.play(seeked_start / 1_000_000)
+
 
 func _on_music_player_finished():
 	print("finished")
 	get_tree().change_scene_to_file("res://src/main_menu.tscn")
 	set_process(false)
-	get_node("/root/Level1").queue_free()
+	get_parent().queue_free()
+
+func _on_note_miss():
+	_t_score -= 1
