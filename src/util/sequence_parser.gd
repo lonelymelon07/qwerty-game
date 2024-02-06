@@ -4,6 +4,7 @@ extends RefCounted
 const DEFAULT_BPM := 120
 const DEFAULT_METRE := 4
 const DEFAULT_SUB_METRE := 72
+const DEFAULT_NOTE_SPEED_MODIFIER := 1.0
 
 var text: String
 var result: Dictionary = {
@@ -34,7 +35,11 @@ func parse() -> Dictionary:
 			var item = _parse_item(line.lstrip("$"))
 			if item.is_some:
 				item = item.unwrap()
-				result.metadata[item[0]] = int(item[1]) if item[1].is_valid_int() else item[1]
+				result.metadata[item[0]] = ( # mmmmm tasty multi-line nested ternary
+						int(item[1]) if item[1].is_valid_int()
+						else float(item[1]) if item[1].is_valid_float() 
+						else item[1] # cast if we can, else default to a string
+				)
 		else:
 			var item = _parse_item(line)
 			if item.is_some:
@@ -46,6 +51,7 @@ func parse() -> Dictionary:
 
 		_current += 1
 
+	print(result)
 	return result
 
 

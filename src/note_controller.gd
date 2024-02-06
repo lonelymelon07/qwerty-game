@@ -1,7 +1,5 @@
 extends Node2D
 
-const NOTE_SPEED_MODIFIER = 1
-
 @export var note_scene: PackedScene
 @export var song_audio: AudioStreamOggVorbis
 @export_file("*.txt") var sequence_path: String
@@ -15,12 +13,14 @@ var notes: Dictionary
 var note_speed: float
 var _time_last_frame: int = 0
 var seeked_start: int = 0
+var note_speed_modifier: float
 @onready var screen = get_viewport_rect()
 
 var _t_score: int = 0
-
+var _t_process_count: int = 0
 
 func _ready():
+	
 	set_process(false)
 	
 	$MusicPlayer.stream = song_audio
@@ -34,6 +34,7 @@ func _ready():
 	bpm = sequence.metadata.get("bpm", SequenceParser.DEFAULT_BPM)
 	metre = sequence.metadata.get("metre", SequenceParser.DEFAULT_METRE)
 	sub_metre = sequence.metadata.get("sub_metre", SequenceParser.DEFAULT_SUB_METRE)
+	note_speed_modifier = sequence.metadata.get("note_speed_modifier", SequenceParser.DEFAULT_NOTE_SPEED_MODIFIER)
 	beat_time = roundi(60_000_000.0 / bpm)
 	subbeat_time = roundi(beat_time / float(sub_metre))
 	
@@ -44,11 +45,14 @@ func _ready():
 		if node.is_in_group(&"detector"):
 			node.played.connect(_on_detector_played_note)
 			
-	$StartDelay.wait_time = ((beat_time * 0.5  * metre) / 1_000_000) / NOTE_SPEED_MODIFIER
+	$StartDelay.wait_time = ((beat_time * metre) / 1_000_000) / note_speed_modifier
 	
 	# get speed of notes : modifier * (distance / time [assuming notes should spawn 1 bar ahead] )
-	note_speed = NOTE_SPEED_MODIFIER * ((screen.size.y - $Detector0.position.y) / (beat_time * 0.5 * metre / 1_000_000))
+	note_speed = note_speed_modifier * ((screen.size.y - $Detector0.position.y) / (beat_time * metre / 1_000_000))
 	
+	for animation in $SuccessIndicator.sprite_frames.get_animation_names():
+		$SuccessIndicator.sprite_frames.set_animation_speed(animation, 4 * bpm / 60.0)
+	$SuccessIndicator.animation = "miss"
 	$SuccessIndicator.play()
 	
 	start()
@@ -71,11 +75,10 @@ func _process(_delta):
 		_on_music_player_finished()
 	
 	$ScoreLabel.text = str(_t_score)
+	_t_process_count += 1
 
 
 func start():
-	print(song_audio.bpm)
-	print(song_audio.bar_beats)
 	_time_last_frame = Time.get_ticks_usec()
 	
 	# We're skipping ahead, so let's purge any notes we don't need
@@ -117,7 +120,6 @@ func _on_detector_played_note(success):
 	$SuccessIndicator.play($Detector0.success_to_str(success))
 	
 	_t_score += success if success else -1 # 0 == Miss, 1<= is a hit
-	print(_t_score)
 
 
 func _on_start_delay_timeout():
@@ -125,7 +127,8 @@ func _on_start_delay_timeout():
 
 
 func _on_music_player_finished():
-	print("finished")
+	print("finished: avg process delta: %d us" % (Time.get_ticks_usec() / _t_process_count))
+	print(subbeat_time)
 	get_tree().change_scene_to_file("res://src/main_menu.tscn")
 	set_process(false)
 	get_parent().queue_free()

@@ -109,7 +109,6 @@ one_shot = true
 [node name="SuccessIndicator" type="AnimatedSprite2D" parent="."]
 position = Vector2(125, 75)
 sprite_frames = SubResource("SpriteFrames_ncehg")
-animation = &"perfect"
 
 [node name="ScoreLabel" type="Label" parent="."]
 offset_left = 770.0

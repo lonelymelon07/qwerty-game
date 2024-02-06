@@ -9,8 +9,8 @@ func _ready():
 	if Persistent.config.debug.instant_load_default_level:
 		_on_play_button_pressed()
 	elif Persistent.config.debug.instant_load_custom_level:
-		$CustomLevelContainer/CustomLevelEdit.text = Persistent.config.custom_sequence_path
-		$CustomLevelContainer/CustomSongEdit.text = Persistent.config.custom_audio_path
+		$CustomLevelContainer/CustomLevelEdit.text = Persistent.config.debug.custom_sequence_path
+		$CustomLevelContainer/CustomSongEdit.text = Persistent.config.debug.custom_audio_path
 		_on_play_custom_button_pressed()
 
 

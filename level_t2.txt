@@ -1,5 +1,6 @@
-$bpm = 60
+$bpm = 120
 $metre = 4
+$note_speed_modifier = 0.5
 
 1.1.0 = Q
 1.1.36 = W
