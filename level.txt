@@ -1,5 +1,6 @@
 $bpm = 120
 $metre = 4
+$note_speed_modifier = 2.0
 
 1.1.0 = q
 1.2.0 = y

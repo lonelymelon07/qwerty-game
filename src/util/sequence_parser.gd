@@ -51,7 +51,6 @@ func parse() -> Dictionary:
 
 		_current += 1
 
-	print(result)
 	return result
 
 

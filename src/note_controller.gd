@@ -107,11 +107,13 @@ func vecd_to_timed(vecd: Dictionary):
 	for k in vecd:
 		var newk: int = roundi(((metre*(k.x - 1) + (k.y - 1)) * beat_time) + k.z * subbeat_time)
 		timed[newk] = vecd[k]
+		
 	return timed
 
 
 func _advance_time():
 	var time_this_frame = Time.get_ticks_usec()
+	print(time_this_frame - _time_last_frame)
 	time += time_this_frame - _time_last_frame
 	_time_last_frame = time_this_frame
 
@@ -128,7 +130,6 @@ func _on_start_delay_timeout():
 
 func _on_music_player_finished():
 	print("finished: avg process delta: %d us" % (Time.get_ticks_usec() / _t_process_count))
-	print(subbeat_time)
 	get_tree().change_scene_to_file("res://src/main_menu.tscn")
 	set_process(false)
 	get_parent().queue_free()
