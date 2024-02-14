@@ -30,7 +30,6 @@ func _process(_delta):
 		_find_overlapping_areas().map(func(s): played.emit(s))
 
 
-
 func _get_success(area: Area2D) -> Success:
 	if $Perfect.overlaps_area(area):
 		return Success.PERFECT

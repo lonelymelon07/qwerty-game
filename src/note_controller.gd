@@ -45,10 +45,10 @@ func _ready():
 		if node.is_in_group(&"detector"):
 			node.played.connect(_on_detector_played_note)
 			
-	$StartDelay.wait_time = ((beat_time * metre) / 1_000_000) / note_speed_modifier
+	$StartDelay.wait_time = ((beat_time * metre) / 1_000_000.0) / note_speed_modifier
 	
 	# get speed of notes : modifier * (distance / time [assuming notes should spawn 1 bar ahead] )
-	note_speed = note_speed_modifier * ((screen.size.y - $Detector0.position.y) / (beat_time * metre / 1_000_000))
+	note_speed = note_speed_modifier * ((screen.size.y - $Detector0.position.y) / (beat_time * metre / 1_000_000.0))
 	
 	for animation in $SuccessIndicator.sprite_frames.get_animation_names():
 		$SuccessIndicator.sprite_frames.set_animation_speed(animation, 4 * bpm / 60.0)
@@ -59,11 +59,11 @@ func _ready():
 
 
 func _process(_delta):
-	if $StartDelay.is_stopped():
-		_advance_time()
-
+	_advance_time()
+	
 	# Get all notes which need to be played
 	var timestamps_to_play = notes.keys().filter(func(k): return k <= time)
+	
 	# Spawn each in the right spot!
 	for timestamp in timestamps_to_play:
 		for note in notes[timestamp]:
@@ -113,7 +113,6 @@ func vecd_to_timed(vecd: Dictionary):
 
 func _advance_time():
 	var time_this_frame = Time.get_ticks_usec()
-	print(time_this_frame - _time_last_frame)
 	time += time_this_frame - _time_last_frame
 	_time_last_frame = time_this_frame
 
@@ -121,11 +120,11 @@ func _advance_time():
 func _on_detector_played_note(success):
 	$SuccessIndicator.play($Detector0.success_to_str(success))
 	
-	_t_score += success if success else -1 # 0 == Miss, 1<= is a hit
+	_t_score += success if success else -1 # 0 == Miss, >=1 is a hit
 
 
 func _on_start_delay_timeout():
-	$MusicPlayer.play(seeked_start / 1_000_000)
+	$MusicPlayer.play(seeked_start / 1_000_000.0)
 
 
 func _on_music_player_finished():
