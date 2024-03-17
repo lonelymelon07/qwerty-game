@@ -47,7 +47,8 @@ func parse() -> Dictionary:
 				var timestamp = _parse_timestamp(item[0]).unwrap(true)
 				if not result.sequence.has(timestamp):
 					result.sequence[timestamp] = []
-				result.sequence[timestamp].append(_char_to_notetype(item[1]))
+				result.sequence[timestamp].append(_str_to_event(item[1]))
+
 
 		_current += 1
 
@@ -90,9 +91,36 @@ func _parse_timestamp(s) -> Nullable: # -> Vector3i | null
 	return Nullable.some(Vector3i(nums[0], nums[1], nums[2]))
 
 
-func _char_to_notetype(c: String) -> BaseNote.NoteType:
-	var nt = BaseNote.string_to_note_type(c)
-	if nt == BaseNote.NoteType.INVALID:
-		errors.append([_current, "invalid note type"])
-		
-	return nt
+#func _char_to_notetype(c: String) -> Variant:
+#	var nt = BaseNote.string_to_note_type(c)
+#	if nt != BaseNote.NoteType.INVALID:
+#		return nt
+#	if c.begins_with("!bpm:"):
+#		c = c.trim_prefix("!bpm:")
+#		if not c.is_valid_int():
+#			errors.append([_current, "bpm must be valid int"])
+#		return int(c)
+#	return BaseNote
+
+func _str_to_event(s: String) -> BaseNote.NoteEvent:
+	# let's try metdatering first
+	
+	var event_type: int
+	var data: Variant
+	
+	s = s.replace(" ", "") # removing all spaces
+	if s.contains(":"):
+		event_type = BaseNote.NoteEvent.NOTE_EVENT_CHANGE_METADATA
+		data = Array(s.split(":"))
+		if data[1].is_valid_int():
+			data[1] = int(data[1])
+	else:
+		event_type = BaseNote.NoteEvent.NOTE_EVENT_PLAY
+		data = BaseNote.string_to_note_type(s)
+		if data == BaseNote.NoteType.INVALID:
+			errors.append([_current, "invalid note type"])
+	
+	return BaseNote.NoteEvent.new(
+			event_type,
+			data
+		)

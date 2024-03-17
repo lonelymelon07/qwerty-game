@@ -6,11 +6,14 @@ extends Node2D
 var metre: int
 var sub_metre: int
 var bpm: int
-var beat_time: int
-var subbeat_time: int
+var beat_time: int:
+	get: return calc_beat_time(bpm)
+var subbeat_time: int:
+	get: return calc_subbeat_time(bpm, sub_metre)
 var time: int = 0
 var notes: Dictionary
-var note_speed: float
+var note_speed: float:
+	get: return note_speed_modifier * ((screen.size.y - $Detector0.position.y) / (beat_time * metre / 1_000_000.0))
 var _time_last_frame: int = 0
 var seeked_start: int = 0
 var note_speed_modifier: float
@@ -35,8 +38,6 @@ func _ready():
 	metre = sequence.metadata.get("metre", SequenceParser.DEFAULT_METRE)
 	sub_metre = sequence.metadata.get("sub_metre", SequenceParser.DEFAULT_SUB_METRE)
 	note_speed_modifier = sequence.metadata.get("note_speed_modifier", SequenceParser.DEFAULT_NOTE_SPEED_MODIFIER)
-	beat_time = roundi(60_000_000.0 / bpm)
-	subbeat_time = roundi(beat_time / float(sub_metre))
 	
 	notes = vecd_to_timed(sequence.sequence)
 	
@@ -48,7 +49,7 @@ func _ready():
 	$StartDelay.wait_time = ((beat_time * metre) / 1_000_000.0) / note_speed_modifier
 	
 	# get speed of notes : modifier * (distance / time [assuming notes should spawn 1 bar ahead] )
-	note_speed = note_speed_modifier * ((screen.size.y - $Detector0.position.y) / (beat_time * metre / 1_000_000.0))
+#	note_speed = note_speed_modifier * ((screen.size.y - $Detector0.position.y) / (beat_time * metre / 1_000_000.0))
 	
 	for animation in $SuccessIndicator.sprite_frames.get_animation_names():
 		$SuccessIndicator.sprite_frames.set_animation_speed(animation, 4 * bpm / 60.0)
@@ -62,13 +63,19 @@ func _process(_delta):
 	_advance_time()
 	
 	# Get all notes which need to be played
-	var timestamps_to_play = notes.keys().filter(func(k): return k <= time)
+	var timestamps_to_play: Array = notes.keys().filter(func(k): return k <= time)
 	
 	# Spawn each in the right spot!
 	for timestamp in timestamps_to_play:
-		for note in notes[timestamp]:
-			var spawn_position := Vector2(get_node("Detector%s" % note).position.x, screen.size.y)
-			spawn_note(spawn_position, note, note_speed)
+		for event in notes[timestamp]:
+			match event.event_type:
+				BaseNote.NoteEvent.NOTE_EVENT_PLAY:
+					var spawn_position := Vector2(get_node("Detector%s" % event.data).position.x, screen.size.y)
+					spawn_note(spawn_position, event.data, note_speed)
+				BaseNote.NoteEvent.NOTE_EVENT_CHANGE_METADATA:
+					match event.data[0]:
+						"bpm": bpm = event.data[1]
+		
 		notes.erase(timestamp)
 	
 	if Input.is_action_just_pressed("ui_cancel"):
@@ -103,10 +110,24 @@ func spawn_note(spawn_position: Vector2, note_type: BaseNote.NoteType, speed: fl
 
 # Converts a Dict with Vector3 keys (bar, beat, subbeat) to a single timestamp key in μs
 func vecd_to_timed(vecd: Dictionary):
+	print(vecd)
 	var timed := {}
+	var temp_bpm := bpm
+
 	for k in vecd:
-		var newk: int = roundi(((metre*(k.x - 1) + (k.y - 1)) * beat_time) + k.z * subbeat_time)
+		for l in k:
+			if vecd[k][l].event_type == BaseNote.NoteEvent.NOTE_EVENT_CHANGE_METADATA:
+				match vecd[k][l].data[0]:
+					"bpm": temp_bpm = vecd[k][l].data[1]
+	#		if vecd[k][0].type == SequenceParser.SongEvent.EVENT_TYPE_NOTE_PLAY:
+		var newk: int = roundi(
+			((metre*(k.x - 1) + (k.y - 1)) * calc_beat_time(temp_bpm)) 
+				+ k.z * calc_subbeat_time(temp_bpm, sub_metre)
+			)
 		timed[newk] = vecd[k]
+	#		elif vecd[k].type == SequenceParser.SongEvent.EVENT_TYPE_CHANGE_METADATA:
+	#			match vecd[k]:
+	#				"bpm": bpm = vecd[k].data[0]
 		
 	return timed
 
@@ -115,6 +136,7 @@ func _advance_time():
 	var time_this_frame = Time.get_ticks_usec()
 	time += time_this_frame - _time_last_frame
 	_time_last_frame = time_this_frame
+
 
 
 func _on_detector_played_note(success):
@@ -128,6 +150,8 @@ func _on_start_delay_timeout():
 
 
 func _on_music_player_finished():
+	print(bpm)
+	
 	print("finished: avg process delta: %d us" % (Time.get_ticks_usec() / _t_process_count))
 	get_tree().change_scene_to_file("res://src/main_menu.tscn")
 	set_process(false)
@@ -135,3 +159,9 @@ func _on_music_player_finished():
 
 func _on_note_miss():
 	_t_score -= 1
+
+static func calc_beat_time(bpm_: int):
+	return roundi(60_000_000.0 / bpm_)
+
+static func calc_subbeat_time(bpm_: int, sub_metre_: int):
+	return roundi(calc_beat_time(bpm_) / float(sub_metre_))
