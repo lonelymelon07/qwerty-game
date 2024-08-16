@@ -25,6 +25,11 @@ func _on_play_button_pressed():
 
 
 func _on_play_custom_button_pressed():
+	if len($CustomLevelContainer/CustomLevelEdit.text) == 0:
+		$CustomLevelContainer/CustomLevelEdit.text = Persistent.config.debug.custom_sequence_path
+	if len($CustomLevelContainer/CustomSongEdit.text) == 0:
+		$CustomLevelContainer/CustomSongEdit.text = Persistent.config.debug.custom_audio_path
+	
 	SceneLoader.load_scene("res://src/levels/base_test_level.tscn")
 	var scene: PackedScene = await SceneLoader.loaded
 	var audio: AudioStreamOggVorbis = load($CustomLevelContainer/CustomSongEdit.text)

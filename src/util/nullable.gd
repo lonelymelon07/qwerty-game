@@ -31,12 +31,12 @@ static func maybe(val: Variant, type_: Variant.Type) -> Nullable:
 
 func unwrap(silent := false) -> Variant:
 	if is_none and not silent:
-		push_error("Nullable.unwrap() returned null")
+		push_error("Nullable.unwrap() was a none value")
 	return _value
 
 func unwrap_or(default: Variant) -> Variant:
 	return _value if is_some else default
-	
+
 func unwrap_or_else(f: Callable) -> Variant:
 	return _value if is_some else f.call()
 

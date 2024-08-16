@@ -102,6 +102,7 @@ position = Vector2(680, 75)
 note_type = 5
 
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="."]
+volume_db = -15.001
 
 [node name="StartDelay" type="Timer" parent="."]
 one_shot = true

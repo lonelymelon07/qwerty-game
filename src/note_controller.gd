@@ -13,6 +13,7 @@ var subbeat_time: int:
 var time: int = 0
 var notes: Dictionary
 var note_speed: float:
+	# m * ( dy / (beat_length * metre = bar_length) )  
 	get: return note_speed_modifier * ((screen.size.y - $Detector0.position.y) / (beat_time * metre / 1_000_000.0))
 var _time_last_frame: int = 0
 var seeked_start: int = 0
@@ -114,12 +115,16 @@ func vecd_to_timed(vecd: Dictionary):
 	var timed := {}
 	var temp_bpm := bpm
 
+	print(temp_bpm)
+
 	for k in vecd:
-		for l in k:
-			if vecd[k][l].event_type == BaseNote.NoteEvent.NOTE_EVENT_CHANGE_METADATA:
-				match vecd[k][l].data[0]:
-					"bpm": temp_bpm = vecd[k][l].data[1]
-	#		if vecd[k][0].type == SequenceParser.SongEvent.EVENT_TYPE_NOTE_PLAY:
+		for event in vecd[k]:
+			if event.event_type == BaseNote.NoteEvent.NOTE_EVENT_CHANGE_METADATA:
+				print("herefirst")
+				match event.data[0]:
+					"bpm": 
+						temp_bpm = event.data[1]
+						print("here??")
 		var newk: int = roundi(
 			((metre*(k.x - 1) + (k.y - 1)) * calc_beat_time(temp_bpm)) 
 				+ k.z * calc_subbeat_time(temp_bpm, sub_metre)
@@ -128,7 +133,8 @@ func vecd_to_timed(vecd: Dictionary):
 	#		elif vecd[k].type == SequenceParser.SongEvent.EVENT_TYPE_CHANGE_METADATA:
 	#			match vecd[k]:
 	#				"bpm": bpm = vecd[k].data[0]
-		
+	
+	print(temp_bpm)
 	return timed
 
 

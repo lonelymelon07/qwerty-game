@@ -67,6 +67,7 @@ placeholder_text = "Custom sequence"
 [node name="CustomSongEdit" type="LineEdit" parent="CustomLevelContainer"]
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_s35g6")
+text = "res://assets/music/dancing_in_the_moonlight.ogg"
 placeholder_text = "Custom song"
 
 [node name="PlayCustomButton" type="Button" parent="CustomLevelContainer"]
