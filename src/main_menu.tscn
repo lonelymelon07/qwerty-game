@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://src/main_menu.gd" id="1_epqrp"]
 [ext_resource type="Theme" uid="uid://df0q8hdt0bl7v" path="res://assets/themes/temp_theme.tres" id="1_w301r"]
-[ext_resource type="FontFile" uid="uid://b0w0lmgfdwjtc" path="res://assets/themes/casio-fx-cg50-sizea.ttf" id="3_s35g6"]
+[ext_resource type="FontFile" uid="uid://b2r74yd78ps6v" path="res://assets/themes/OpenSans-VariableFont_wdth,wght.ttf" id="3_6v5ia"]
 
 [node name="UI" type="Control"]
 layout_mode = 3
@@ -61,12 +61,12 @@ grow_vertical = 2
 [node name="CustomLevelEdit" type="LineEdit" parent="CustomLevelContainer"]
 layout_mode = 2
 tooltip_text = "Enter the path of the level file, relative to the project root directory"
-theme_override_fonts/font = ExtResource("3_s35g6")
+theme_override_fonts/font = ExtResource("3_6v5ia")
 placeholder_text = "Custom sequence"
 
 [node name="CustomSongEdit" type="LineEdit" parent="CustomLevelContainer"]
 layout_mode = 2
-theme_override_fonts/font = ExtResource("3_s35g6")
+theme_override_fonts/font = ExtResource("3_6v5ia")
 text = "res://assets/music/dancing_in_the_moonlight.ogg"
 placeholder_text = "Custom song"
 

@@ -12,9 +12,7 @@ var subbeat_time: int:
 	get: return calc_subbeat_time(bpm, sub_metre)
 var time: int = 0
 var notes: Dictionary
-var note_speed: float:
-	# m * ( dy / (beat_length * metre = bar_length) )  
-	get: return note_speed_modifier * ((screen.size.y - $Detector0.position.y) / (beat_time * metre / 1_000_000.0))
+var note_speed: float = 0
 var _time_last_frame: int = 0
 var seeked_start: int = 0
 var note_speed_modifier: float
@@ -24,6 +22,8 @@ var _t_score: int = 0
 var _t_process_count: int = 0
 
 func _ready():
+	# DEBUG stuff
+	$DebugScreen.property_list = [&"time", &"bpm", &"note_speed"] as Array[StringName]
 	
 	set_process(false)
 	
@@ -46,11 +46,21 @@ func _ready():
 	for node in get_children():
 		if node.is_in_group(&"detector"):
 			node.played.connect(_on_detector_played_note)
-			
-	$StartDelay.wait_time = ((beat_time * metre) / 1_000_000.0) / note_speed_modifier
+	
+	var start_delay_string: String = sequence.metadata.get("start_delay", "%sb"%metre)
+	print(start_delay_string)
+	if start_delay_string.ends_with("s"):
+		$StartDelay.wait_time = float(start_delay_string.trim_suffix("s"))
+	elif start_delay_string.ends_with("b"):
+		$StartDelay.wait_time = float(start_delay_string.trim_suffix("b")) * beat_time / 1_000_000.0
+	else:
+		$StartDelay.wait_time = 0.0
+		push_warning("invalid start delay")
+	print("start delay wait time %s" % $StartDelay.wait_time)
 	
 	# get speed of notes : modifier * (distance / time [assuming notes should spawn 1 bar ahead] )
-#	note_speed = note_speed_modifier * ((screen.size.y - $Detector0.position.y) / (beat_time * metre / 1_000_000.0))
+	# NOTE: modifier was complicating things a bit
+	note_speed = ((screen.size.y - $Detector0.position.y) / $StartDelay.wait_time)
 	
 	for animation in $SuccessIndicator.sprite_frames.get_animation_names():
 		$SuccessIndicator.sprite_frames.set_animation_speed(animation, 4 * bpm / 60.0)
@@ -106,35 +116,31 @@ func spawn_note(spawn_position: Vector2, note_type: BaseNote.NoteType, speed: fl
 	note.note_type = note_type
 	note.speed = speed
 	note.missed.connect(_on_note_miss)
+
 	add_child(note)
 
 
 # Converts a Dict with Vector3 keys (bar, beat, subbeat) to a single timestamp key in μs
 func vecd_to_timed(vecd: Dictionary):
-	print(vecd)
+#	print(vecd)
 	var timed := {}
 	var temp_bpm := bpm
 
-	print(temp_bpm)
+#	print(temp_bpm)
 
 	for k in vecd:
 		for event in vecd[k]:
 			if event.event_type == BaseNote.NoteEvent.NOTE_EVENT_CHANGE_METADATA:
-				print("herefirst")
 				match event.data[0]:
 					"bpm": 
 						temp_bpm = event.data[1]
-						print("here??")
 		var newk: int = roundi(
 			((metre*(k.x - 1) + (k.y - 1)) * calc_beat_time(temp_bpm)) 
 				+ k.z * calc_subbeat_time(temp_bpm, sub_metre)
 			)
 		timed[newk] = vecd[k]
-	#		elif vecd[k].type == SequenceParser.SongEvent.EVENT_TYPE_CHANGE_METADATA:
-	#			match vecd[k]:
-	#				"bpm": bpm = vecd[k].data[0]
 	
-	print(temp_bpm)
+	print(timed)
 	return timed
 
 
