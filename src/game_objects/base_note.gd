@@ -45,14 +45,14 @@ static func string_to_note_type(string: String) -> NoteType:
 
 
 class NoteEvent:
-	enum { NOTE_EVENT_INVALID, NOTE_EVENT_PLAY, NOTE_EVENT_CHANGE_METADATA }
+	enum { NOTE_EVENT_INVALID, NOTE_EVENT_PLAY_ONCE, NOTE_EVENT_PLAY_DURATION, NOTE_EVENT_CHANGE_METADATA }
 	
 	var event_type: int
 	var data: Variant
 	
-	func _init(event_type: int, data: Variant):
-		self.event_type = event_type
-		self.data = data
+	func _init(event_type_: int, data_: Variant):
+		event_type = event_type_
+		data = data_
 	
 	func _to_string():
 		return "NoteEvent{%s,%s}" % [self.event_type, self.data]

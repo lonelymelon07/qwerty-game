@@ -81,14 +81,14 @@ func _parse_item(line: String) -> Nullable: # -> Array | null
 	return Nullable.some(split_line.map(func(x): return x.strip_edges()))
 
 
-func _parse_timestamp(s) -> Nullable: # -> Vector3i | null
+func _parse_timestamp(s: String) -> Nullable: # -> Vector3i | null
 	var nums = s.split(".")
 	
 	if len(nums) != 3:
 		errors.append([_current, "beat position must contain 3 values, eg 1.2.0"])
 		return Nullable.none(TYPE_VECTOR3I)
-	nums = Array(nums).map(func(s): return s.to_int())
-	return Nullable.some(Vector3i(nums[0], nums[1], nums[2]))
+	nums = Vector3i(nums[0].to_int() - 1, nums[1].to_int() - 1, nums[2].to_int())
+	return Nullable.some(nums)
 
 
 #func _char_to_notetype(c: String) -> Variant:
@@ -115,7 +115,7 @@ func _str_to_event(s: String) -> BaseNote.NoteEvent:
 		if data[1].is_valid_int():
 			data[1] = int(data[1])
 	else:
-		event_type = BaseNote.NoteEvent.NOTE_EVENT_PLAY
+		event_type = BaseNote.NoteEvent.NOTE_EVENT_PLAY_ONCE
 		data = BaseNote.string_to_note_type(s)
 		if data == BaseNote.NoteType.INVALID:
 			errors.append([_current, "invalid note type"])

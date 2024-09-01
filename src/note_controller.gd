@@ -10,9 +10,9 @@ var beat_time: int:
 	get: return calc_beat_time(bpm)
 var subbeat_time: int:
 	get: return calc_subbeat_time(bpm, sub_metre)
-var time: int = 0
+var time: int = 0 # us
 var notes: Dictionary
-var note_speed: float = 0
+var note_speed: float = 0 # px / s (NOT us!!)
 var _time_last_frame: int = 0
 var seeked_start: int = 0
 var note_speed_modifier: float
@@ -80,7 +80,7 @@ func _process(_delta):
 	for timestamp in timestamps_to_play:
 		for event in notes[timestamp]:
 			match event.event_type:
-				BaseNote.NoteEvent.NOTE_EVENT_PLAY:
+				BaseNote.NoteEvent.NOTE_EVENT_PLAY_ONCE:
 					var spawn_position := Vector2(get_node("Detector%s" % event.data).position.x, screen.size.y)
 					spawn_note(spawn_position, event.data, note_speed)
 				BaseNote.NoteEvent.NOTE_EVENT_CHANGE_METADATA:
@@ -116,29 +116,40 @@ func spawn_note(spawn_position: Vector2, note_type: BaseNote.NoteType, speed: fl
 	note.note_type = note_type
 	note.speed = speed
 	note.missed.connect(_on_note_miss)
+	
+	#TEMP
+	note.duration = speed * 0.25
 
 	add_child(note)
 
 
 # Converts a Dict with Vector3 keys (bar, beat, subbeat) to a single timestamp key in μs
 func vecd_to_timed(vecd: Dictionary):
-#	print(vecd)
+	print(vecd)
 	var timed := {}
 	var temp_bpm := bpm
-
-#	print(temp_bpm)
+	var vec_offset := Vector3i.ZERO # bar, beat subeat offset for changing BPM
+	var time_offset := 0
 
 	for k in vecd:
+		
+		# Because this calculation assumes a constant BPM, we have to "reset" to 0
+		# every time the BPM changes, and add back on that time offset later
+		var newk: int = roundi(
+			((metre*(k.x - vec_offset.x) + (k.y - vec_offset.y)) * calc_beat_time(temp_bpm)) 
+				+ ((k.z - vec_offset.z) * calc_subbeat_time(temp_bpm, sub_metre))
+			)
+
+		timed[newk + time_offset] = vecd[k]
+
 		for event in vecd[k]:
 			if event.event_type == BaseNote.NoteEvent.NOTE_EVENT_CHANGE_METADATA:
 				match event.data[0]:
 					"bpm": 
+						vec_offset = k
+						time_offset = newk
 						temp_bpm = event.data[1]
-		var newk: int = roundi(
-			((metre*(k.x - 1) + (k.y - 1)) * calc_beat_time(temp_bpm)) 
-				+ k.z * calc_subbeat_time(temp_bpm, sub_metre)
-			)
-		timed[newk] = vecd[k]
+		
 	
 	print(timed)
 	return timed
@@ -162,8 +173,6 @@ func _on_start_delay_timeout():
 
 
 func _on_music_player_finished():
-	print(bpm)
-	
 	print("finished: avg process delta: %d us" % (Time.get_ticks_usec() / _t_process_count))
 	get_tree().change_scene_to_file("res://src/main_menu.tscn")
 	set_process(false)
