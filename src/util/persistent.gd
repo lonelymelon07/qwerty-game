@@ -10,7 +10,10 @@ var main_menu_data := {
 
 var config := {}
 
+
 func _ready():
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	
 	var config_file = ConfigFile.new()
 	var err = config_file.load("res://config.cfg")
 	
@@ -23,3 +26,7 @@ func _ready():
 			config[section][key] = config_file.get_value(section, key, null)
 			
 	print(config)
+
+func _input(event):
+	if event.is_action_pressed(&"pause"):
+		get_tree().paused = not get_tree().paused

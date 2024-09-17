@@ -1,0 +1,20 @@
+[gd_scene load_steps=3 format=3 uid="uid://4ci8fxltrbe3"]
+
+[ext_resource type="Script" path="res://src/debug_screen.gd" id="1_byid7"]
+[ext_resource type="FontFile" uid="uid://b2r74yd78ps6v" path="res://assets/themes/OpenSans-VariableFont_wdth,wght.ttf" id="2_xig1k"]
+
+[node name="DebugScreen" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_byid7")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_fonts/font = ExtResource("2_xig1k")

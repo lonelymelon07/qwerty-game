@@ -3,6 +3,7 @@ extends BaseNote
 enum Success { MISS, OK, GOOD, PERFECT }
 
 signal played(success: Success)
+signal played_duration(duration: int) # us!
 
 var key: StringName
 

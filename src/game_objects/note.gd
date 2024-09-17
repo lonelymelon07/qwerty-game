@@ -3,9 +3,11 @@ extends BaseNote
 signal missed
 
 var speed: float
+var duration: int = 1
 
 func _ready():
 	super._ready()
+	$ExtendTexture.size.y = duration 
 
 
 func _physics_process(delta):
