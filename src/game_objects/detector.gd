@@ -29,6 +29,10 @@ func _process(_delta):
 	
 	if Input.is_action_just_pressed(key):
 		_find_overlapping_areas().map(func(s): played.emit(s))
+		
+	if Input.is_action_just_released(key):
+		print("released")
+		_find_overlapping_areas(true).map(func(s): played.emit(s))
 
 
 func _get_success(area: Area2D) -> Success:
@@ -42,8 +46,10 @@ func _get_success(area: Area2D) -> Success:
 	return Success.MISS
 
 
-func _find_overlapping_areas() -> Array[Success]:
-	var areas: Array[Area2D] = $OK.get_overlapping_areas()
+func _find_overlapping_areas(note_end := false) -> Array[Success]:
+	var areas: Array[Area2D] = $OK.get_overlapping_areas().filter(
+			func(a): return a.get_meta(&"note_end", false) == note_end
+	)
 	var result: Array[Success] = []
 	for area in areas:
 		if area.monitorable:

@@ -23,7 +23,7 @@ var _t_process_count: int = 0
 
 func _ready():
 	# DEBUG stuff
-	$DebugScreen.property_list = [&"time", &"bpm", &"note_speed"] as Array[StringName]
+	$DebugScreen.property_list = [&"time", &"bpm", &"note_speed", &"metre"] as Array[StringName]
 	
 	set_process(false)
 	
@@ -83,9 +83,13 @@ func _process(_delta):
 				BaseNote.NoteEvent.NOTE_EVENT_PLAY_ONCE:
 					var spawn_position := Vector2(get_node("Detector%s" % event.data).position.x, screen.size.y)
 					spawn_note(spawn_position, event.data, note_speed)
+				BaseNote.NoteEvent.NOTE_EVENT_PLAY_DURATION:
+					var spawn_position := Vector2(get_node("Detector%s" % event.data[0]).position.x, screen.size.y)
+					spawn_note(spawn_position, event.data[0], note_speed, event.data[1])
 				BaseNote.NoteEvent.NOTE_EVENT_CHANGE_METADATA:
 					match event.data[0]:
 						"bpm": bpm = event.data[1]
+						"metre": metre = event.data[1]
 		
 		notes.erase(timestamp)
 	
@@ -110,15 +114,13 @@ func start():
 	$StartDelay.start()
 
 
-func spawn_note(spawn_position: Vector2, note_type: BaseNote.NoteType, speed: float):
+func spawn_note(spawn_position: Vector2, note_type: BaseNote.NoteType, speed: float, duration=0):
 	var note = note_scene.instantiate()
 	note.position = spawn_position
 	note.note_type = note_type
 	note.speed = speed
 	note.missed.connect(_on_note_miss)
-	
-	#TEMP
-	note.duration = speed * 0.25
+	note.length = roundi(duration * speed / 1_000_000.0)
 
 	add_child(note)
 
@@ -128,17 +130,26 @@ func vecd_to_timed(vecd: Dictionary):
 	print(vecd)
 	var timed := {}
 	var temp_bpm := bpm
+	var temp_metre := metre
 	var vec_offset := Vector3i.ZERO # bar, beat subeat offset for changing BPM
 	var time_offset := 0
 
 	for k in vecd:
-		
 		# Because this calculation assumes a constant BPM, we have to "reset" to 0
 		# every time the BPM changes, and add back on that time offset later
 		var newk: int = roundi(
-			((metre*(k.x - vec_offset.x) + (k.y - vec_offset.y)) * calc_beat_time(temp_bpm)) 
+			((temp_metre*(k.x - vec_offset.x) + (k.y - vec_offset.y)) * calc_beat_time(temp_bpm)) 
 				+ ((k.z - vec_offset.z) * calc_subbeat_time(temp_bpm, sub_metre))
 			)
+
+		for event in vecd[k]:
+			if event.event_type == BaseNote.NoteEvent.NOTE_EVENT_PLAY_DURATION:
+				# IMPORTANT NOTE: This is a DURATION calculation, and also assumes CONSTANT bpm & metre for its length
+				event.data[1] = roundi(
+						(temp_metre * event.data[1].x + event.data[1].y) * calc_beat_time(temp_bpm)
+						+ event.data[1].z * calc_subbeat_time(temp_bpm, sub_metre) 
+				)
+				print(event.data[1])
 
 		timed[newk + time_offset] = vecd[k]
 
@@ -146,9 +157,11 @@ func vecd_to_timed(vecd: Dictionary):
 			if event.event_type == BaseNote.NoteEvent.NOTE_EVENT_CHANGE_METADATA:
 				match event.data[0]:
 					"bpm": 
-						vec_offset = k
-						time_offset = newk
 						temp_bpm = event.data[1]
+					"metre":
+						temp_metre = event.data[1]
+				vec_offset = k
+				time_offset = newk
 		
 	
 	print(timed)

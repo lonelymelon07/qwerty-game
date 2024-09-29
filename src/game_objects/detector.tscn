@@ -64,13 +64,13 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_gmfjl"]
-size = Vector2(74, 100)
+size = Vector2(74, 110)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_rq6ru"]
-size = Vector2(74, 66.75)
+size = Vector2(74, 73.375)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_iuute"]
-size = Vector2(74, 30)
+size = Vector2(74, 35)
 
 [node name="Detector" type="Node2D" groups=["detector"]]
 script = ExtResource("1_f24u8")

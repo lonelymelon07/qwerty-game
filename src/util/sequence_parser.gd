@@ -114,6 +114,19 @@ func _str_to_event(s: String) -> BaseNote.NoteEvent:
 		data = Array(s.split(":"))
 		if data[1].is_valid_int():
 			data[1] = int(data[1])
+	elif s.contains("~"):
+		event_type = BaseNote.NoteEvent.NOTE_EVENT_PLAY_DURATION
+		data = Array(s.split("~"))
+		data[0] = BaseNote.string_to_note_type(data[0])
+		var nums: PackedStringArray = data[1].split(".")
+		print(nums)
+		
+		if len(nums) == 2:
+			data[1] = Vector3i(0, nums[0].to_int(), nums[1].to_int())
+			print(data[1])
+		else:
+			data[1] = Vector3i(0, nums[0].to_int(), 0)
+		
 	else:
 		event_type = BaseNote.NoteEvent.NOTE_EVENT_PLAY_ONCE
 		data = BaseNote.string_to_note_type(s)

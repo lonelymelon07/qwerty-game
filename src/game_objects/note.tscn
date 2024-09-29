@@ -41,8 +41,7 @@ size = Vector2(74, 10)
 script = ExtResource("1_vylkh")
 
 [node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
-position = Vector2(0.499999, 0.5)
-scale = Vector2(3.75, 3.75)
+rect = Rect2(-35, 0, 70, 40)
 
 [node name="Textures" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_4b1sx")
@@ -55,10 +54,17 @@ collision_mask = 0
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Collision"]
 shape = SubResource("RectangleShape2D_1kgj1")
 
+[node name="NoteEndCollision" type="Area2D" parent="."]
+metadata/note_end = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="NoteEndCollision"]
+position = Vector2(0, 35)
+shape = SubResource("RectangleShape2D_1kgj1")
+
 [node name="ExtendTexture" type="ColorRect" parent="."]
 offset_left = -8.0
 offset_right = 8.0
-offset_bottom = 10.0
+offset_bottom = 35.0
 pivot_offset = Vector2(8, 0)
 size_flags_horizontal = 0
 size_flags_vertical = 0
